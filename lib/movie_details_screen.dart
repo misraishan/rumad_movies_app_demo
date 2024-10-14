@@ -16,8 +16,6 @@ class MovieDetailsScreen extends StatefulWidget {
 
 class MovieDetailsScreenState extends State<MovieDetailsScreen> {
   bool isFavorite = false;
-  final String apiKey = dotenv.env['API_KEY']!;
-  final String bearerToken = dotenv.env['BEARER_TOKEN']!;
   final int accountId = int.parse(dotenv.env['ACCOUNT_ID']!);
   final Map<String, dynamic> movie = {};
 
@@ -32,10 +30,7 @@ class MovieDetailsScreenState extends State<MovieDetailsScreen> {
         Uri.parse(
           '$baseUrl/movie/${widget.movieId}',
         ),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $bearerToken',
-        });
+        headers: headers);
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -46,18 +41,10 @@ class MovieDetailsScreenState extends State<MovieDetailsScreen> {
   }
 
   Future<void> toggleFavorite() async {
-    final headersMap = <String, String>{};
-
-    headersMap.addAll({
-      'Authorization': 'Bearer $bearerToken',
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    });
-
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/account/$accountId/favorite'),
-        headers: headersMap,
+        headers: headers,
         body: json.encode({
           'media_type': 'movie',
           'media_id': movie['id'],

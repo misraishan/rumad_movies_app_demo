@@ -53,7 +53,7 @@ class HomeScreenState extends State<HomeScreen> {
 
     for (var entry in endpoints.entries) {
       final response =
-          await http.get(Uri.parse('$baseUrl${entry.value}?api_key=$apiKey'));
+          await http.get(Uri.parse('$baseUrl${entry.value}'), headers: headers);
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
@@ -115,10 +115,13 @@ class HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: ListView(
-        children: movieLists.entries
-            .map((entry) => buildMovieCarousel(entry.key, entry.value))
-            .toList(),
+      body: RefreshIndicator(
+        onRefresh: fetchMovieLists,
+        child: ListView(
+          children: movieLists.entries
+              .map((entry) => buildMovieCarousel(entry.key, entry.value))
+              .toList(),
+        ),
       ),
     );
   }
