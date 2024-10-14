@@ -41,3 +41,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# env — Usually, environment variables such as API keys should REALLY not be stored in client side.
+.env
