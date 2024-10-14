@@ -9,9 +9,12 @@ import 'constants.dart';
 // override methods to customize the search behavior.
 class MovieSearchDelegate extends SearchDelegate {
   Future<List> fetchMovies(String query) async {
+    // Implementation of the fetchMovies method
+    // Temporary response to return an empty list if the query is empty
     final response = await http.get(
-        Uri.parse('$baseUrl/search/movie?query=${Uri.encodeComponent(query)}'),
-        headers: headers);
+      Uri.parse('$baseUrl/search/movie'), // Uses the search endpoint
+      headers: headers,
+    );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);

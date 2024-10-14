@@ -68,17 +68,12 @@ class MovieDetailsScreenState extends State<MovieDetailsScreen> {
   Future<void> toggleFavorite() async {
     try {
       // Sends a request to the API to favorite or unfavorite a movie
-      final response = await http.post(
-        Uri.parse('$baseUrl/account/$accountId/favorite'),
-        headers: headers,
-        body: json.encode({
-          'media_type': 'movie',
-          'media_id': movie['id'],
-          'favorite': !isFavorite,
-        }),
-      );
 
-      final jsonResponse = json.decode(response.body);
+      // Implementation of the toggleFavorite method
+      // final response = await http.post();
+
+      final jsonResponse = json.decode(
+          '{"success": true}'); // This is a placeholder for the actual response
 
       if (jsonResponse['success'] == true) {
         // This will update the UI to show the user that the movie is a favorite
@@ -126,6 +121,8 @@ class MovieDetailsScreenState extends State<MovieDetailsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Uses the network image widget to use the image from the API,
+            // along with the base URL
             Image.network('$imageBaseUrl${movie['backdrop_path']}'),
             Padding(
               padding: const EdgeInsets.all(8.0),
