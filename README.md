@@ -2,6 +2,7 @@
 
 ## Pull from GitHub
 - Run `git clone https://github.com/misraishan/rumad_movies_app_demo.git`
+- Rename `.env.example` to `.env`
 
 ## Install packages
 - Run `flutter pub get`
