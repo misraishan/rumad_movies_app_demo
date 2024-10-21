@@ -70,10 +70,17 @@ class MovieDetailsScreenState extends State<MovieDetailsScreen> {
       // Sends a request to the API to favorite or unfavorite a movie
 
       // Implementation of the toggleFavorite method
-      // final response = await http.post();
+      final response = await http.post(
+        Uri.parse('$baseUrl/account/$accountId/favorite'),
+        headers: headers,
+        body: json.encode({
+          'media_type': 'movie',
+          'media_id': movie['id'],
+          'favorite': !isFavorite
+        }),
+      );
 
-      final jsonResponse = json.decode(
-          '{"success": true}'); // This is a placeholder for the actual response
+      final jsonResponse = json.decode(response.body);
 
       if (jsonResponse['success'] == true) {
         // This will update the UI to show the user that the movie is a favorite

@@ -58,7 +58,23 @@ class HomeScreenState extends State<HomeScreen> {
     };
 
     for (var entry in endpoints.entries) {
-      // Implement the GET request for each endpoint
+      try {
+        debugPrint('$baseUrl${entry.value}');
+        // Implement the GET request for each endpoint
+        final response = await http.get(Uri.parse('$baseUrl${entry.value}'),
+            headers: headers);
+
+        if (response.statusCode == 200) {
+          debugPrint(response.body);
+          final data = json.decode(response.body);
+
+          setState(() {
+            movieLists[entry.key] = data['results'];
+          });
+        }
+      } catch (e) {
+        debugPrint(e.toString());
+      }
     }
   }
 
