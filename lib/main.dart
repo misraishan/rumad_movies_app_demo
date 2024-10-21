@@ -1,14 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_movies_api_demo/auth.dart';
 import 'package:flutter_movies_api_demo/constants.dart';
 import 'package:flutter_movies_api_demo/movie_details_screen.dart';
 import 'package:flutter_movies_api_demo/search.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Do this immediately as well.
+
   await dotenv.load(fileName: "assets/.env"); // Load .env file
+  await Supabase.initialize(
+    url: 'https://irhaodqloxfcxhfwwula.supabase.co',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlyaGFvZHFsb3hmY3hoZnd3dWxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mjk1NDAwNjQsImV4cCI6MjA0NTExNjA2NH0.HfQEktrET2Deyo6LYC3tFK1jHWyJsBv7VlZkGVCsBiA',
+  );
+
   runApp(const MovieApp());
 }
 
@@ -22,6 +32,9 @@ class MovieApp extends StatelessWidget {
       theme: ThemeData
           .dark(), // Set the theme to dark, can be customized as needed
       home: const HomeScreen(), // Set the home screen to HomeScreen
+      routes: {
+        '/auth': (context) => const AuthScreen(), // Add the AuthScreen route
+      },
     );
   }
 }
@@ -47,6 +60,17 @@ class HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     fetchMovieLists(); // When the app starts, fetch the movie lists and set the state
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final isAuthenticated =
+          Supabase.instance.client.auth.currentSession != null;
+      debugPrint('isAuthenticated: $isAuthenticated');
+
+      if (!isAuthenticated) {
+        Navigator.pushReplacementNamed(context, '/auth');
+      } else {
+        fetchMovieLists(); // Fetch movie lists only if the user is authenticated
+      }
+    });
   }
 
   Future<void> fetchMovieLists() async {
@@ -103,9 +127,20 @@ class HomeScreenState extends State<HomeScreen> {
       body: RefreshIndicator(
         onRefresh: fetchMovieLists,
         child: ListView(
-          children: movieLists.entries
-              .map((entry) => _buildMovieCarousel(entry.key, entry.value))
-              .toList(),
+          children: [
+            ...movieLists.entries
+                .map((entry) => _buildMovieCarousel(entry.key, entry.value)),
+            FilledButton(
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.all(Colors.red),
+              ),
+              onPressed: () {
+                Supabase.instance.client.auth.signOut();
+                Navigator.pushReplacementNamed(context, '/auth');
+              },
+              child: Text('Sign Out'),
+            ),
+          ],
         ),
       ),
     );
